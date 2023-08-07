@@ -1,0 +1,16 @@
+ext {
+    // versions
+    kotlin_version = "1.8.0"
+
+    prefs_version = "1.1.0" // note 1.2.0 has minCompileSdk = 31 (greater than this module's compileSdkVersion = 30)
+
+    junit_version = "4.12" // 4.13.2
+    junit_ext_version = "1.1.2" // 1.1.5
+    espresso_version = "3.3.0" // "3.5.1"
+
+    emdk_version = "7.6+"
+
+    // Can't determine type for tag '<macro name="m3_comp_assist_chip_container_shape">
+    // https://stackoverflow.com/questions/74191324/cant-determine-type-for-tag-macro-name-m3-comp-bottom-app-bar-container-colo
+    material_version = "1.2.1" // "1.2.1" upgrade to 1.9 or 1.7 failed
+}
