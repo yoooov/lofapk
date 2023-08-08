@@ -1,10 +1,13 @@
 package com.valeo.app.lofapk.ui
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.util.Base64
 import android.util.Log
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -46,7 +49,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MainActivity : AppCompatActivity(), IOnInteractionListener, EMDKListener, StatusListener, DataListener {
+@Suppress("DEPRECATION")
+class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataListener {
 
     /*companion object {
         fun newInstance() = MainActivity()
@@ -99,7 +103,7 @@ class MainActivity : AppCompatActivity(), IOnInteractionListener, EMDKListener, 
     private lateinit var mHandler: Handler
     private lateinit var mRunnable: Runnable
 
-    private var fabListener: IOnInteractionListener? = null
+    // private var fabListener: IOnInteractionListener? = null
 
     @SuppressLint("LogNotTimber")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -153,14 +157,17 @@ class MainActivity : AppCompatActivity(), IOnInteractionListener, EMDKListener, 
         }
         */
 
+
         findViewById<FloatingActionButton>(R.id.fab_main).setOnClickListener {
 
-            doFabDeployment()
 
             runOnUiThread { // Update the dataView EditText on UI thread with barcode data
                 // dataView.text.clear()
                 /* dataView.text = ""
                 dataViewLoc.text = ""*/
+                //doFabDeployment()
+                deployFabMenu()
+
             }
 
         }
@@ -207,7 +214,9 @@ class MainActivity : AppCompatActivity(), IOnInteractionListener, EMDKListener, 
 
     private fun doFabDeployment() {
         //resetSearchView()
-        fabListener?.onDeployFabMenu()
+        //fabListener?.onDeployFabMenu()
+        //onDeployFabMenu()
+        deployFabMenu()
     }
 
     private fun toBeImplemented(message: String) {
@@ -219,7 +228,7 @@ class MainActivity : AppCompatActivity(), IOnInteractionListener, EMDKListener, 
         barcodeManager = emdkManager!!.getInstance(EMDKManager.FEATURE_TYPE.BARCODE) as BarcodeManager
 
         if (barcodeManager == null) {
-            Toast.makeText(this, "Barcode scanning is not supported.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.not_supported_message), Toast.LENGTH_LONG).show()
             finish()
         }
     }
@@ -318,13 +327,13 @@ class MainActivity : AppCompatActivity(), IOnInteractionListener, EMDKListener, 
 
     override fun onStatus(status: StatusData?) {
 
-        val state: StatusData.ScannerStates = status!!.getState()
+        val state: StatusData.ScannerStates = status!!.state
         var statusStr = ""
 
         when (state) {
             StatusData.ScannerStates.IDLE -> {
                 // Scanner is idle and ready to change configuration and submit read.
-                statusStr = status.getFriendlyName().toString() + " is ready..."
+                statusStr = status.friendlyName.toString() + " is ready..."
 
                 setConfig()
                 try {
@@ -335,13 +344,14 @@ class MainActivity : AppCompatActivity(), IOnInteractionListener, EMDKListener, 
             }
 
             StatusData.ScannerStates.WAITING ->     // Scanner is waiting for trigger press to scan...
-                statusStr = "Waiting for OF scan..."
+                statusStr = if (ofIsScanned == 0) getString(R.string.status_message_of) else getString(
+                                    R.string.status_message_location)
 
             StatusData.ScannerStates.SCANNING ->     // Scanning is in progress...
                 statusStr = "Scanning..."
 
             StatusData.ScannerStates.DISABLED ->     // Scanner is disabled
-                statusStr = status.getFriendlyName().toString() + " is disabled."
+                statusStr = status.friendlyName.toString() + " is disabled."
 
             StatusData.ScannerStates.ERROR ->     // Error has occurred during scanning
                 statusStr = "An error has occurred."
@@ -355,8 +365,8 @@ class MainActivity : AppCompatActivity(), IOnInteractionListener, EMDKListener, 
     @SuppressLint("LogNotTimber")
     override fun onData(scanDataCollection: ScanDataCollection?) {
 
-        var dataStr = ""
-
+        // var dataStr = ""
+        val regexOF = """^(R?\d{5}[A-Z]?)(-?\d{2})?$""".toRegex()
 
         if (scanDataCollection != null && scanDataCollection.result === ScannerResults.SUCCESS) {
             val scanData = scanDataCollection.scanData
@@ -368,11 +378,27 @@ class MainActivity : AppCompatActivity(), IOnInteractionListener, EMDKListener, 
                 if (ofIsScanned == 0) {
                     unixTime = System.currentTimeMillis() / 1000
                     // dataStr = "OF: $barcodeData"
-                    locationInfo.uniqueId = barcodeData
-                    dataOF = barcodeData
-                    locationDataSet.add(dataOF)
 
-                    ofIsScanned++
+                    // check numof format like 00000 or 00000-00
+                    if (regexOF.matches(input = barcodeData)) {
+                        locationInfo.uniqueId = barcodeData
+                        dataOF = barcodeData
+                        locationDataSet.add(dataOF)
+
+                        ofIsScanned++
+                    } else {
+                        // reset the counter to zero
+                        updateStatus(getString(R.string.uniqueid_not_valid))
+
+                        // TODO fix toast issue
+                        val toast: Toast = Toast.makeText(this@MainActivity, getString(R.string.uniqueid_not_valid), Toast.LENGTH_SHORT)
+                        val view: View = toast.view!!
+                        view.setBackgroundColor(Color.RED);
+                        toast.setGravity(Gravity.TOP, 0, 140)
+                        toast.show()
+
+                        ofIsScanned = 0
+                    }
 
                 } else {
                     // dataStr = "LOC: $barcodeData"
@@ -485,10 +511,10 @@ class MainActivity : AppCompatActivity(), IOnInteractionListener, EMDKListener, 
 
     override fun onDestroy() {
         super.onDestroy()
-        fabListener = null
+        // fabListener = null
         if (emdkManager != null) {
 
-// Clean up the objects created by EMDK manager
+            // Clean up the objects created by EMDK manager
             emdkManager!!.release()
             emdkManager = null
         }
@@ -512,7 +538,7 @@ class MainActivity : AppCompatActivity(), IOnInteractionListener, EMDKListener, 
         }
     }
 
-    override fun onDeployFabMenu() {
+    private fun deployFabMenu() {
 
         val mSetView = mutableListOf<View>(
             findViewById<FloatingActionButton>(R.id.fab_post_location),
@@ -568,8 +594,6 @@ class MainActivity : AppCompatActivity(), IOnInteractionListener, EMDKListener, 
             mMove = animExpanded
             mPhase = animRotateRight
         }
-
-        // implementing ViewBinding
 
         findViewById<FloatingActionButton>(R.id.fab_post_location).startAnimation(mMove)
         findViewById<FloatingActionButton>(R.id.fab_get_location).startAnimation(mMove)
