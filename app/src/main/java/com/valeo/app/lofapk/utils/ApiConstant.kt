@@ -15,6 +15,8 @@ class ApiConstant {
         const val CLIENT_ID = "5n7f0v7VMDa9cWKIcprgOA.."
         const val CLIENT_SECRET = "ICVI_JTcG28upnZ3howHSw.."
 
+        const val HANDLER_FAB = 4000            // delay in millisecond to collapse fab menu
+
         const val REF_EMP_API_BASEURL = "https://iss1-sv00052.vnet.valeo.com/escheduling/"
         const val REQUEST_REFRESH_TOKEN = "/oauth/token"
 

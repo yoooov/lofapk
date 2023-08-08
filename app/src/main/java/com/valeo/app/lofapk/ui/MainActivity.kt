@@ -2,10 +2,14 @@ package com.valeo.app.lofapk.ui
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Handler
 import android.util.Base64
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -26,18 +30,23 @@ import com.valeo.app.lofapk.model.OFinfo
 import com.valeo.app.lofapk.model.ScanningLocation
 import com.valeo.app.lofapk.utils.ApiConstant.Companion.CLIENT_ID
 import com.valeo.app.lofapk.utils.ApiConstant.Companion.CLIENT_SECRET
+import com.valeo.app.lofapk.utils.ApiConstant.Companion.HANDLER_FAB
 import com.valeo.app.lofapk.utils.ApiConstant.Companion.MAIN_TITLE
 import com.valeo.app.lofapk.utils.ApiConstant.Companion.SEPA
 import com.valeo.app.lofapk.utils.ApiConstant.Companion.SPACER
 import com.valeo.app.lofapk.utils.api.ApiClient
 import com.valeo.app.lofapk.utils.api.AuthSessionManager
 import com.valeo.app.lofapk.utils.api.OrdsApiClient
+import com.valeo.app.lofapk.utils.hideFab
+import com.valeo.app.lofapk.utils.hideTip
 import com.valeo.app.lofapk.utils.scanner.ProductAdapter
+import com.valeo.app.lofapk.utils.showFab
+import com.valeo.app.lofapk.utils.showTip
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataListener {
+class MainActivity : AppCompatActivity(), IOnInteractionListener, EMDKListener, StatusListener, DataListener {
 
     /*companion object {
         fun newInstance() = MainActivity()
@@ -49,6 +58,9 @@ class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataList
     private var dataLOC = ""
 
     private var canPost = false
+
+    private var isOpen: Boolean = false
+    private var isRunning: Boolean = false
 
     private var locationInfo: OFinfo = OFinfo(uniqueId = "", location = "")
     private var locationDataSet: MutableList<String> = mutableListOf()
@@ -83,6 +95,9 @@ class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataList
 
     private lateinit var sessionManager: AuthSessionManager
     private lateinit var apiClient: ApiClient
+
+    private lateinit var mHandler: Handler
+    private lateinit var mRunnable: Runnable
 
     private var fabListener: IOnInteractionListener? = null
 
@@ -496,5 +511,75 @@ class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataList
             e.printStackTrace()
         }
     }
+
+    override fun onDeployFabMenu() {
+
+        val mSetView = mutableListOf<View>(
+            findViewById<FloatingActionButton>(R.id.fab_post_location),
+            findViewById<FloatingActionButton>(R.id.fab_get_location)
+        )
+
+        val mSetTextView = mutableListOf<TextView>(
+            findViewById<TextView>(R.id.tv_post_location),
+            findViewById<TextView>(R.id.tv_get_location)
+        )
+
+        if (isOpen) {
+
+            if(isRunning) mHandler.removeCallbacks(mRunnable)
+            animHandler(false)
+            for(v in mSetView) { v.hideFab() }
+            for(t in mSetTextView) { t.hideTip() }
+            isOpen = false;
+
+        } else {
+
+            mHandler = Handler()
+            mRunnable = Runnable {
+                animHandler(false)
+                for(v in mSetView) { v.hideFab() }
+                for(t in mSetTextView) { t.hideTip() }
+                isOpen = false
+            }
+
+            animHandler(true)
+            isRunning = true
+            for(v in mSetView){ v.showFab() }
+            for(t in mSetTextView) { t.showTip() }
+            isOpen = true
+            mHandler.postDelayed(mRunnable, HANDLER_FAB.toLong())
+        }
+    }
+
+
+    private fun animHandler(mLaunch: Boolean) {
+
+        val mMove : Animation
+        val mPhase : Animation
+        val animCollapsed = AnimationUtils.loadAnimation(this, R.anim.fab_collapse)
+        val animExpanded = AnimationUtils.loadAnimation(this, R.anim.fab_expand)
+        val animRotateRight = AnimationUtils.loadAnimation(this, R.anim.fab_rotate_right)
+        val animRotateLeft = AnimationUtils.loadAnimation(this, R.anim.fab_rotate_left)
+
+        if (!mLaunch) {
+            mMove = animCollapsed
+            mPhase = animRotateLeft
+        } else {
+            mMove = animExpanded
+            mPhase = animRotateRight
+        }
+
+        // implementing ViewBinding
+
+        findViewById<FloatingActionButton>(R.id.fab_post_location).startAnimation(mMove)
+        findViewById<FloatingActionButton>(R.id.fab_get_location).startAnimation(mMove)
+
+        findViewById<TextView>(R.id.tv_post_location).startAnimation(mMove)
+        findViewById<TextView>(R.id.tv_get_location).startAnimation(mMove)
+
+        findViewById<FloatingActionButton>(R.id.fab_main).startAnimation(mPhase)
+
+    }
+
 
 }
