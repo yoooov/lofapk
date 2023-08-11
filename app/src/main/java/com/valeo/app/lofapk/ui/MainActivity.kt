@@ -8,6 +8,7 @@ import android.os.Handler
 import android.util.Base64
 import android.util.Log
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -386,16 +387,24 @@ class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataList
                         locationDataSet.add(dataOF)
 
                         ofIsScanned++
+
                     } else {
                         // reset the counter to zero
                         updateStatus(getString(R.string.uniqueid_not_valid))
 
                         // TODO fix toast issue
-                        val toast: Toast = Toast.makeText(this@MainActivity, getString(R.string.uniqueid_not_valid), Toast.LENGTH_SHORT)
-                        val view: View = toast.view!!
-                        view.setBackgroundColor(Color.RED);
-                        toast.setGravity(Gravity.TOP, 0, 140)
-                        toast.show()
+                        runOnUiThread {
+                            // Toast.makeText(this, "Not a valid UNIQUEID Format", Toast.LENGTH_LONG).show()
+                            /*
+                            val toast: Toast = Toast.makeText(this@MainActivity, getString(R.string.uniqueid_not_valid), Toast.LENGTH_LONG)
+                            val view: View = toast.view!!
+                            view.setBackgroundColor(Color.RED);
+                            toast.setGravity(Gravity.TOP, 0, 140)
+                            toast.show()
+                            */
+                            Toast(this).showCustomToast(getString(R.string.uniqueid_not_valid))
+
+                        }
 
                         ofIsScanned = 0
                     }
@@ -440,6 +449,22 @@ class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataList
 
     }
 
+    private fun Toast.showCustomToast(message: String) {
+        val context: Context = applicationContext
+        val inflater: LayoutInflater = layoutInflater
+
+        val toastView: View = inflater.inflate(R.layout.custom_toast, null)
+
+        val textView = toastView.findViewById<TextView>(R.id.tv_toast)
+        textView.text = message
+
+        this.apply {
+            setGravity(Gravity.TOP, 0, 140)
+            duration = Toast.LENGTH_LONG
+            view = toastView
+            show()
+        }
+    }
 
     private fun updateData(result: String) {
         //private fun updateData(result: OFinfo) {
