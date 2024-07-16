@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
     <domain-config>
-        <domain includeSubdomains="true">iss1-sv00052.vnet.valeo.com</domain>
-        <!-- <domain includeSubdomains="true">another.example.com</domain> -->
+        <!-- <domain includeSubdomains="true">iss1-sv00052.vnet.valeo.com</domain> -->
+        <domain includeSubdomains="true">iss1-appserver-mis.vnet.valeo.com</domain>
         <trust-anchors>
-            <certificates src="@raw/webserver"/>
+            <!-- <certificates src="@raw/webserver"/> -->
+            <certificates src="@raw/appserver"/>
         </trust-anchors>
     </domain-config>
 </network-security-config>

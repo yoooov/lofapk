@@ -35,7 +35,7 @@ class AuthSessionManager(context: Context) {
         return prefs.getString(USER_TOKEN, null)
     }
 
-    fun fetchExpiresIn(): Long? {
+    fun fetchExpiresIn(): Long {
         return prefs.getLong(EXPIRED_TOKEN, 0)
     }
 }

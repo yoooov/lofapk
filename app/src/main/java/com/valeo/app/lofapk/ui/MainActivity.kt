@@ -2,7 +2,6 @@ package com.valeo.app.lofapk.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.util.Base64
@@ -115,15 +114,15 @@ class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataList
         setSupportActionBar(findViewById(R.id.toolbar))
         supportActionBar?.title = SPACER + MAIN_TITLE
 
-        supportActionBar?.setDisplayShowHomeEnabled(true);
-        supportActionBar?.setLogo(R.drawable.ic_factory_white_24dp);
-        supportActionBar?.setDisplayUseLogoEnabled(true);
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+        supportActionBar?.setLogo(R.drawable.ic_factory_white_24dp)
+        supportActionBar?.setDisplayUseLogoEnabled(true)
 
         apiClient = ApiClient()
         sessionManager = AuthSessionManager(this)
 
         val base64String = get64BaseString("${CLIENT_ID}:${CLIENT_SECRET}")
-        Log.i("APP_DEBUG ", "base64 client id+secret $base64String")
+        Log.i("APP_DEBUG ", "Client id+secret in b64 string $base64String")
 
         //apiClient.getApiService().login(auth = "Basic ${ApiConstant.CLIENT_B64}", grantType = "client_credentials")
         apiClient.getApiService().login(auth = "Basic $base64String", grantType = "client_credentials")
@@ -201,10 +200,10 @@ class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataList
         val results = EMDKManager.getEMDKManager(applicationContext, this)
 
         if (results.statusCode != EMDKResults.STATUS_CODE.SUCCESS) {
-            updateStatus("EMDKManager object request failed!");
-            return;
+            updateStatus("EMDKManager object request failed!")
+            return
         } else {
-            updateStatus("EMDKManager object initialization is in progress.......");
+            updateStatus("EMDKManager object initialization is in progress.......")
         }
 
     }
@@ -310,20 +309,20 @@ class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataList
     override fun onOpened(emdkManager: EMDKManager?) {
 
 
-        this.emdkManager = emdkManager;
+        this.emdkManager = emdkManager
 
-        initBarcodeManager();
+        initBarcodeManager()
 
-        initScanner();
+        initScanner()
     }
 
     override fun onClosed() {
 
         if (emdkManager != null) {
-            emdkManager!!.release();
-            emdkManager = null;
+            emdkManager!!.release()
+            emdkManager = null
         }
-        updateStatus("EMDK closed unexpectedly! Please close and restart the application.");
+        updateStatus("EMDK closed unexpectedly! Please close and restart the application.")
     }
 
     override fun onStatus(status: StatusData?) {
@@ -367,18 +366,25 @@ class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataList
     override fun onData(scanDataCollection: ScanDataCollection?) {
 
         // var dataStr = ""
-        val regexOF = """^(R?\d{5}[A-Z]?)(-?\d{2})?$""".toRegex()
+        val regexOF = """^(K?R?\d{5}[A-Z]?)(-?\d{2})?$""".toRegex()
 
         if (scanDataCollection != null && scanDataCollection.result === ScannerResults.SUCCESS) {
             val scanData = scanDataCollection.scanData
 
             for (data in scanData) {
 
-                val barcodeData = data.data
+                var barcodeData = data.data
 
                 if (ofIsScanned == 0) {
                     unixTime = System.currentTimeMillis() / 1000
                     // dataStr = "OF: $barcodeData"
+
+                    // we clean the string if it starts with K
+                    if (barcodeData.startsWith("K")) {
+                        barcodeData = barcodeData.drop(1)
+                        // we remove the last char 0 too because the string is bounded
+                        barcodeData = barcodeData.dropLast(1)
+                    }
 
                     // check numof format like 00000 or 00000-00
                     if (regexOF.matches(input = barcodeData)) {
@@ -396,18 +402,19 @@ class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataList
                         runOnUiThread {
                             // Toast.makeText(this, "Not a valid UNIQUEID Format", Toast.LENGTH_LONG).show()
                             /*
-                            val toast: Toast = Toast.makeText(this@MainActivity, getString(R.string.uniqueid_not_valid), Toast.LENGTH_LONG)
-                            val view: View = toast.view!!
-                            view.setBackgroundColor(Color.RED);
-                            toast.setGravity(Gravity.TOP, 0, 140)
-                            toast.show()
-                            */
+                        val toast: Toast = Toast.makeText(this@MainActivity, getString(R.string.uniqueid_not_valid), Toast.LENGTH_LONG)
+                        val view: View = toast.view!!
+                        view.setBackgroundColor(Color.RED);
+                        toast.setGravity(Gravity.TOP, 0, 140)
+                        toast.show()
+                        */
                             Toast(this).showCustomToast(getString(R.string.uniqueid_not_valid))
 
                         }
 
                         ofIsScanned = 0
                     }
+
 
                 } else {
                     // dataStr = "LOC: $barcodeData"
@@ -418,9 +425,10 @@ class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataList
                     canPost = true
 
                     Log.d("APP_DEBUG", "locationInfo to POST: " + locationInfo.toString())
-                    if (System.currentTimeMillis() < sessionManager.fetchExpiresIn()!!) {
+                    if (System.currentTimeMillis() < sessionManager.fetchExpiresIn()) {
+                        Log.d("APP_DEBUG", "currentTimeMillis < sessionManager.fetchExpiresIn")
                         onPostSelected(data = locationInfo)
-                        //updateData(locationInfo)
+                        // updateData(locationInfo)
                         // ofIsScanned = 0
                     }
 
@@ -469,7 +477,7 @@ class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataList
     private fun updateData(result: String) {
         //private fun updateData(result: OFinfo) {
 
-        var counter: Int = 0
+        // var counter: Int = 0
 
         runOnUiThread { // Update the dataView EditText on UI thread with barcode data and its label type
             if (dataLength++ >= 1) {
@@ -581,7 +589,7 @@ class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataList
             animHandler(false)
             for(v in mSetView) { v.hideFab() }
             for(t in mSetTextView) { t.hideTip() }
-            isOpen = false;
+            isOpen = false
 
         } else {
 
