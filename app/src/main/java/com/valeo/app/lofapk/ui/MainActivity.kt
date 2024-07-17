@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataList
 
     // private var fabListener: IOnInteractionListener? = null
 
-    @SuppressLint("LogNotTimber")
+    @SuppressLint("LogNotTimber", "NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -427,34 +427,18 @@ class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataList
                     Log.d("APP_DEBUG", "locationInfo to POST: " + locationInfo.toString())
                     if (System.currentTimeMillis() < sessionManager.fetchExpiresIn()) {
                         Log.d("APP_DEBUG", "currentTimeMillis < sessionManager.fetchExpiresIn")
+
+                        // post request to api
                         onPostSelected(data = locationInfo)
-                        // updateData(locationInfo)
-                        // ofIsScanned = 0
                     }
 
                     updateData(locationDataSet[0] + SEPA + locationDataSet[1])
 
                     ofIsScanned = 0
 
-                    /*
-                    if ((System.currentTimeMillis() / 1000) < (unixTime + 3600)) {
-                        // get current token
-                        Log.d("APP_DEBUG", "locationInfo to POST: " + locationInfo.toString())
-                        onPostSelected( data = locationInfo, token = ACCESS_TOKEN)
-                    }
-                    else {
-                        // renew the token
-                        // ACCESS_TOKEN = ""
-                        Log.d("APP_DEBUG", "locationInfo to POST: " + locationInfo.toString())
-                        onPostSelected(data = locationInfo, token = ACCESS_TOKEN)
-                    }
-                    */
-
                 }
             }
-
         }
-
     }
 
     private fun Toast.showCustomToast(message: String) {
@@ -492,6 +476,9 @@ class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataList
 
             productAdapter.refresh(productList) // with refresh all cardviews are refreshed
             //productAdapter.add(productList)
+
+            // note that .refresh() already handled the event productAdapter.notifyDataSetChanged()
+            rvBarcodes.scrollToPosition(productAdapter.itemCount-1)
 
             locationDataSet.removeAt(1)
             locationDataSet.removeAt(0)

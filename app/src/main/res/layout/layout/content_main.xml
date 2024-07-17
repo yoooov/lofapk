@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -20,11 +22,13 @@
         android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/textViewStatusTitle"
-        android:layout_centerHorizontal="true"
         android:ems="10"
         android:fadeScrollbars="true"
-        android:inputType="none|textMultiLine" />
+        android:inputType="none|textMultiLine"
+        android:autofillHints=""
+        tools:ignore="LabelFor" />
+    <!--android:layout_above="@+id/textViewStatusTitle"
+        android:layout_centerHorizontal="true" -->
 
     <!-- <include layout="@layout/location_row" /> -->
 
@@ -40,11 +44,11 @@
         android:id="@+id/textViewStatusTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/textViewStatus"
         android:gravity="bottom"
         android:layout_gravity="bottom|center"
-        android:layout_centerHorizontal="true"
         android:layout_marginBottom="15dp" />
+    <!-- android:layout_above="@+id/textViewStatus"
+        android:layout_centerHorizontal="true" -->
     <!-- android:text="Status:" /> -->
 
 </LinearLayout>

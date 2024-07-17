@@ -19,7 +19,8 @@
             app:elevation="@dimen/toolbar_elevation"
             app:titleMarginStart="@dimen/icon_title_space"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
-        <!-- app:contentInsetLeft="0dp"
+        <!-- app:layout_scrollFlags="scroll"
+             app:contentInsetLeft="0dp"
              app:contentInsetStart="0dp"
              android:theme="@style/CustomToolbarTheme" -->
 
