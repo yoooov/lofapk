@@ -12,6 +12,7 @@ class ApiConstant {
         const val SEPA = "/"
         const val SPACER = " "
         const val MAIN_TITLE = "LOFPDA"
+        // const val MAIN_TITLE = "LOFAPK"
 
         const val CLIENT_ID = "Ai_ztbJOAHRsQ1ca-1XDVQ.."
         const val CLIENT_SECRET = "r6PHW6_ewCozuJbD-G_3Kw.."

@@ -1,26 +1,25 @@
 package com.valeo.app.lofapk.ui
 
 import android.annotation.SuppressLint
-import android.content.Context
+// import android.content.Context
+import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
+import android.text.SpannableString
+import android.text.style.StyleSpan
+import android.text.style.UnderlineSpan
 import android.util.Base64
 import android.util.Log
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-
 import com.symbol.emdk.EMDKManager
 import com.symbol.emdk.EMDKManager.EMDKListener
 import com.symbol.emdk.EMDKResults
@@ -48,6 +47,7 @@ import com.valeo.app.lofapk.utils.showTip
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+
 
 @Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataListener {
@@ -86,16 +86,14 @@ class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataList
     lateinit var statusTextView: TextView
 
     lateinit var rvBarcodes: RecyclerView
-
-    // Edit Text that is used to display scanned barcode data
-    private lateinit var dataView: EditText
-
-
-    private val startRead = false
-
     lateinit var productAdapter: ProductAdapter
+
     val productList = ArrayList<ScanningLocation>()
 
+    // Edit Text that is used to display scanned barcode data
+    // private lateinit var dataView: EditText
+
+    // private val startRead = false
 
     private lateinit var sessionManager: AuthSessionManager
     private lateinit var apiClient: ApiClient
@@ -280,6 +278,7 @@ class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataList
                 scanner!!.addStatusListener(this)
 
                 scanner!!.triggerType = Scanner.TriggerType.HARD
+
                 try {
 
                     scanner!!.enable()
@@ -442,7 +441,7 @@ class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataList
     }
 
     private fun Toast.showCustomToast(message: String) {
-        val context: Context = applicationContext
+        // val context: Context = applicationContext
         val inflater: LayoutInflater = layoutInflater
 
         val toastView: View = inflater.inflate(R.layout.custom_toast, null)
@@ -477,6 +476,9 @@ class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataList
             productAdapter.refresh(productList) // with refresh all cardviews are refreshed
             //productAdapter.add(productList)
 
+            rvBarcodes.layoutManager?.findViewByPosition(productAdapter.itemCount-1)
+                ?.setBackgroundColor(Color.GREEN)
+
             // note that .refresh() already handled the event productAdapter.notifyDataSetChanged()
             rvBarcodes.scrollToPosition(productAdapter.itemCount-1)
 
@@ -489,7 +491,15 @@ class MainActivity : AppCompatActivity(), EMDKListener, StatusListener, DataList
 
     private fun updateStatus(status: String?) {
         runOnUiThread { // Update the status text view on UI thread with current scanner state
-            statusTextView.text = "" + status
+            // statusTextView.text = "" + status
+
+            // with stylished text
+            val message: String = "" + status
+            val spanString = SpannableString(message)
+            spanString.setSpan(UnderlineSpan(), 0, spanString.length, 0)
+            spanString.setSpan(StyleSpan(Typeface.BOLD), 0, spanString.length, 0)
+            spanString.setSpan(StyleSpan(Typeface.ITALIC), 0, spanString.length, 0)
+            statusTextView.text = spanString
         }
     }
 

@@ -2,9 +2,9 @@
 <resources>
     <color name="gray">#DDDDDD</color>
 
-    <color name="colorPrimary">#82E601</color>
-    <color name="colorPrimaryDark">#589C02</color>
-    <color name="colorAccent">#104293</color>
+    <color name="colorPrimary">#FFB600</color>
+    <color name="colorPrimaryDark">#4E6B7C</color>
+    <color name="colorAccent">#258F98</color>
     <color name="colorSecondary">#535658</color>
 
     <color name="materialcolorpicker__black">#000000</color>
@@ -15,5 +15,6 @@
     <color name="colorGrey">#95a5a6</color>
 
     <color name="fab_text_color">#FFFFFF</color>
-    <color name="fab_surface_color">#1C488F</color>
+    <!-- <color name="fab_surface_color">#1C488F</color> -->
+    <color name="fab_surface_color">#FFB600</color>
 </resources>

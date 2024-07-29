@@ -18,7 +18,7 @@ class ProductAdapter(ctx: Context?, list: ArrayList<ScanningLocation>?) :
 
 
     var productList: ArrayList<ScanningLocation>? = list
-    var mContext: Context? = ctx
+    // var mContext: Context? = ctx
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductAdapter.ProductViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_scanned, parent, false)
@@ -33,8 +33,10 @@ class ProductAdapter(ctx: Context?, list: ArrayList<ScanningLocation>?) :
     override fun onBindViewHolder(holder: ProductAdapter.ProductViewHolder, position: Int) {
 
         val product = productList!![position]
-        holder.uniqueidName.text = """UNIQUEID: ${(product.input).split(SEPA)[0]}"""
-        holder.locationName.text = """LOCATION: ${(product.input).split(SEPA)[1]}"""
+        // holder.uniqueidName.text = """UNIQUEID: ${(product.input).split(SEPA)[0]}"""
+        // holder.locationName.text = """LOCATION: ${(product.input).split(SEPA)[1]}"""
+        holder.uniqueidName.text = """NUMOF: ${(product.input).split(SEPA)[0]}"""
+        holder.locationName.text = """EMPLACEMENT: ${(product.input).split(SEPA)[1]}"""
 
     }
 
@@ -43,7 +45,7 @@ class ProductAdapter(ctx: Context?, list: ArrayList<ScanningLocation>?) :
         val uniqueidName: TextView = itemView.findViewById(R.id.txt_uniqueid)
         val locationName: TextView = itemView.findViewById(R.id.txt_location)
 
-        val mainCard: MaterialCardView = itemView.findViewById(R.id.cv_container)
+        // val mainCard: MaterialCardView = itemView.findViewById(R.id.cv_container)
 
     }
 }

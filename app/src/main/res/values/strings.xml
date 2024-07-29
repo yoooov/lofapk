@@ -11,12 +11,15 @@
     <string name="tv_post_location">Add Location</string>
     <string name="get_location">Get Location</string>
     <string name="tv_get_location">Search OF</string>
-    <string name="no_scanned_numof">No Scanned NumOF</string>
+    <string name="no_scanned_numof">No Scanned NUMOF</string>
 
     <string name="status_title">Status Title</string>
-    <string name="status_message_of">Waiting for NUMOF scan…</string>
-    <string name="status_message_location">Now scan the location…</string>
+    <!-- <string name="status_message_of">Waiting for NUMOF scan…</string> -->
+    <string name="status_message_of">SCANNEZ LE NUMOF…</string>
+    <!-- <string name="status_message_location">Now scan the LOCATION…</string> -->
+    <string name="status_message_location">SCANNEZ L\'EMPLACEMENT…</string>
 
     <string name="not_supported_message">Barcode scanning is not supported.</string>
-    <string name="uniqueid_not_valid">Not a valid UNIQUEID</string>
+    <!-- <string name="uniqueid_not_valid">Not a valid NUMOF</string> -->
+    <string name="uniqueid_not_valid">NUMOF non valide</string>
 </resources>
